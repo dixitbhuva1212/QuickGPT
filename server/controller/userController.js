@@ -15,6 +15,7 @@ export const registerUser = async (req,res)=>{
 
     try {
         const userExists=await User.findOne({email})
+        
         if(userExists){
             return res.json({success:false,message:"User already exists"})
         }
@@ -52,7 +53,7 @@ export const getUser = async (req,res)=>{
         const user= req.user;
         return res.json({success:true,user})
     } catch (error) {
-        return res.json({success:false,message:error.message})
+        return res.json({success:false, message:error.message})
     }
 }
 

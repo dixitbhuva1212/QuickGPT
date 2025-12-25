@@ -28,8 +28,9 @@ export const textMessageController  = async (req,res)=>{
         },
     ],
 });
-const reply = {...choices[0].messages,timestamp:Date.now(),isImage:false}
+const reply = {...choices[0].message,timestamp:Date.now(),isImage:false}
 res.json({success:true,reply})
+
 chat.messages.push(reply)
 await chat.save()
 await User.updateOne({_id:userId},{$inc:{credits:-1}})
@@ -49,7 +50,7 @@ export const imageMessageController = async (req,res) =>{
         }
         const {prompt,chatId , isPublished} = req.body
         // Find chat
-        const chat = await Chat.findOne({userId,_id:chatId})
+        const chat = await Chat.findOne({userId, _id:chatId})
         // Push user message
         chat.messages.push({
                 role:"user",
@@ -62,7 +63,7 @@ export const imageMessageController = async (req,res) =>{
         const encodedPrompt = encodeURIComponent(prompt)
         
         // Construct ImageKit AI generation URL
-        const generatedImageUrl = `${process.env.IMAGEKIT_URL_ENDPOINT}/ik-gening-prompt-${encodedPrompt}/quickgpt/${Date.now()}.png?tr=w-800,h-800`;
+        const generatedImageUrl = `${process.env.IMAGEKIT_URL_ENDPOINT}/ik-genimg-prompt-${encodedPrompt}/quickgpt/${Date.now()}.png?tr=w-800,h-800`;
 
         // Trigger generation by fetching from Imagekit
         const aiIamgeResponse = await axios.get(generatedImageUrl,{responseType:"arraybuffer"})
@@ -71,14 +72,14 @@ export const imageMessageController = async (req,res) =>{
         const base64Image = `data:image/png;base64,${Buffer.from(aiIamgeResponse.data,"binary").toString('base64')}`
 
         // Upload to Imagekit Media library
-        const UploadResponse = await imagekit.upload({
+        const uploadResponse = await imagekit.upload({
             file:base64Image,
             fileName:`${Date.now()}.png`,
             folder:"quickgpt"
         })
         const reply = {
             role:'assistant',
-            content:UploadResponse.url,
+            content:uploadResponse.url,
             timestamp:Date.now(),
             isImage:true,
             isPublished

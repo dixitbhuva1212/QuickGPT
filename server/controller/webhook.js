@@ -1,6 +1,7 @@
 import { request, response } from "express";
 import Stripe from "stripe";
 import Transaction from "../models/Transaction.js";
+import User from "../models/user.js"
 
 export const stripeWebhooks = async (request,response) =>{
     const stripe = new Stripe(process.env.STRIPE_SECRET_KEY)
@@ -45,7 +46,7 @@ export const stripeWebhooks = async (request,response) =>{
         }
         response.json({received:true})
     } catch (error) {
-        console.log('Webhook processing error:',error);
+        console.error('Webhook processing error:',error);
         response.status(500),send("Internal Server error")
         
     }

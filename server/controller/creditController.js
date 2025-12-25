@@ -81,7 +81,7 @@ export const purchasePlan = async (req,res)=>{
         expires_at:Math.floor(Date.now()/1000)+30*60,
         // Expires in 30 minutes
     });
-    res.json({success:true,URL:session.url})
+    res.json({success:true,url:session.url})
     } catch (error) {
         res.json({success:false,message:error.message})
     }
